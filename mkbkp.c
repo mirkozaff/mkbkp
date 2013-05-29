@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "funzioni.h"
 
 int main(int argc, char *argv[]){
@@ -8,8 +9,7 @@ int main(int argc, char *argv[]){
     int f_flag = 0, c_flag = 0, x_flag = 0, t_flag = 0; 
     int c;
     
-    printf("c: %d\n", argc);
-    while ((c = getopt (argc, argv, "fcxt")) != -1){
+    while ((c = getopt (argc, argv, "f:cxt")) != -1){
         switch (c) {
            case 'f':
              f_flag = 1;
@@ -28,21 +28,24 @@ int main(int argc, char *argv[]){
              exit(EXIT_FAILURE);
         }
     }   
-    printf("c: %d\n", c);
+    
     if(f_flag == 1){
         printf("f\n");
     }
     if(c_flag == 1){
-        printf("c\n");
+        
     }
     if(x_flag == 1){
+        
         printf("x\n");
     }
     if(t_flag == 1){
         printf("t\n");
     }
     
-         
+    //archivia(argv[1], argv[2]);
+    estrai(argv[1], argv[2]);
+            
     
     return 0;
 }
