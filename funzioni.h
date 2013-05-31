@@ -6,12 +6,17 @@
  **/
 typedef enum {FALSE = 0, TRUE = 1} boolean;
 
+void archiviaFile(char *path_from, char *archivio);
 
-void copyFile(char *path_from, char *path_to);
+void estrai(char *archivio);
 
-void archivia(char *path_from, char *path_to);
+void listaFileArchivio(char * archivio);
 
-void estrai(char *path_from, char *path_to);
+boolean is_file(const char* path);
+
+boolean is_dir(const char* path);
+
+char *superStringsCat(char *String1, ...);
 
 #endif	/* FUNZIONI_H */
 

@@ -1,23 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
+#include <unistd.h>
 #include "funzioni.h"
 
 int main(int argc, char *argv[]){
 
     /* flag della getopt */
-    int f_flag = 0, c_flag = 0, x_flag = 0, t_flag = 0; 
+    int c_flag = 0, x_flag = 0, t_flag = 0; 
+    char *f_flag = 0; 
+    char abs_path[400];
     int c;
+    int i;
     
+    /* Prende il path assoluto della cartella di lavoro */
+    getcwd(abs_path, 400);
+    i = optind;
+        
     while ((c = getopt (argc, argv, "f:cxt")) != -1){
         switch (c) {
            case 'f':
-             f_flag = 1;
+             f_flag = optarg;
              break;
            case 'c':
              c_flag = 1;
              break;
-           case 'x':
+           case 'x':             
              x_flag = 1;
              break;
            case 't':
@@ -27,25 +36,38 @@ int main(int argc, char *argv[]){
              print_usage();
              exit(EXIT_FAILURE);
         }
-    }   
+    } 
     
-    if(f_flag == 1){
-        printf("f\n");
-    }
-    if(c_flag == 1){
-        
-    }
-    if(x_flag == 1){
-        
-        printf("x\n");
+    if(f_flag == 0){
+        printf("flag -f necessario\n");
+        print_usage();
+        exit(EXIT_FAILURE);       
+    }    
+    
+    if(c_flag == 1 && x_flag == 1){
+        printf("Non puoi sia creare che estrare l'archivio allo stesso tempo\n");
+        print_usage();
+        exit(EXIT_FAILURE);       
     }
     if(t_flag == 1){
-        printf("t\n");
+        listaFileArchivio(f_flag);
     }
-    
-    //archivia(argv[1], argv[2]);
-    estrai(argv[1], argv[2]);
-            
-    
+    if(c_flag == 1){
+        printf("Archiviazione...\n");
+        do{            
+            if(is_file(argv[i])){
+                archiviaFile(argv[i], f_flag);  
+            }
+            if(is_dir(argv[i])){
+                archiviaDir(argv[i], superStringsCat(abs_path, "/", f_flag, NULL));  
+            }
+            i++;
+        } while(i < argc);
+    }
+    if(x_flag == 1){
+        printf("Estrazione...\n");
+        estrai(f_flag);
+    }
+        
     return 0;
 }
