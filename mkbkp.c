@@ -3,9 +3,12 @@
 #include <string.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <syslog.h>
 #include "funzioni.h"
 
 int main(int argc, char *argv[]){
+    
+    openlog(argv[0], LOG_CONS || LOG_PID, LOG_LOCAL0);
 
     /* flag della getopt */
     int c_flag = 0, x_flag = 0, t_flag = 0; 
@@ -34,6 +37,7 @@ int main(int argc, char *argv[]){
              break;
            default:
              print_usage();
+             syslog(LOG_ERR, "Errore di input nel programma");
              exit(EXIT_FAILURE);
         }
     } 
@@ -41,19 +45,28 @@ int main(int argc, char *argv[]){
     if(f_flag == 0){
         printf("flag -f necessario\n");
         print_usage();
+        syslog(LOG_ERR, "Errore di input nel programma");
         exit(EXIT_FAILURE);       
     }    
     
     if(c_flag == 1 && x_flag == 1){
         printf("Non puoi sia creare che estrare l'archivio allo stesso tempo\n");
         print_usage();
+        syslog(LOG_ERR, "Errore di input nel programma");
         exit(EXIT_FAILURE);       
     }
     if(t_flag == 1){
         listaFileArchivio(f_flag);
     }
     if(c_flag == 1){
-        printf("Archiviazione...\n");
+        
+        if(argc <= optind){
+            print_usage();
+            syslog(LOG_ERR, "Errore di input nel programma");
+            exit(EXIT_FAILURE);
+        }
+        
+        printf("Archiviazione... \n");
         do{            
             if(is_file(argv[i])){
                 archiviaFile(argv[i], f_flag);  
@@ -65,9 +78,11 @@ int main(int argc, char *argv[]){
         } while(i < argc);
     }
     if(x_flag == 1){
-        printf("Estrazione...\n");
+        printf("Estrazione... \n");
         estrai(f_flag);
     }
-        
-    return 0;
+    
+    syslog(LOG_INFO, "Programma eseguito con successo");  
+    closelog (); 
+    return (EXIT_SUCCESS);
 }

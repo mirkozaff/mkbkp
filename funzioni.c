@@ -5,10 +5,11 @@
 #include <dirent.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <syslog.h>
 #include "funzioni.h"
 
-char *inizioFile = "1234InIzIoFiLe1234\n";
-char *fineFile = "ABCDFiNeFiLeABCD\n";
+char *inizioFile = "bv4e#vbw3eui°#vnwbùntoib3vset5oi@òjb5voit*****InIzIoFiLe*****bv4e#vbw3eui°#vnwbùntoib3vset5oi@òjb5voit\n";
+char *fineFile = "bv4e#vbw3eui°#vnwbùntoib3vset5oi@òjb5voit*****FiNeFiLe*****bv4e#vbw3eui°#vnwbùntoib3vset5oi@òjb5voit\n";
 
 void archiviaFile(char *path_from, char *archivio){
     
@@ -17,16 +18,20 @@ void archiviaFile(char *path_from, char *archivio){
 
     /* open source file */
     if((file_from = fopen(path_from, "rb")) == NULL) {
+        syslog(LOG_ERR, "Non posso aprire il file sorgente.\n");
         printf("Non posso aprire il file sorgente.\n");
         exit(1);
     }
 
     /* open destination file */
     if((file_to = fopen(archivio, "a")) == NULL) {
+        syslog(LOG_ERR, "Non posso aprire il file di destinazione.\n");
         printf("Non posso aprire il file di destinazione.\n");
         exit(1);
     }
     
+    syslog(LOG_INFO, "Creazione archivio iniziata");
+            
     /* Scrivo le stringhe di riconoscimento di inizio file* ed il nome del file */
     fputs(inizioFile, file_to);
     fputs(path_from, file_to);
@@ -38,6 +43,7 @@ void archiviaFile(char *path_from, char *archivio){
     while(!feof(file_from)) {
         ch = fgetc(file_from);
         if(ferror(file_from)) {
+            syslog(LOG_ERR, "Errore lettura file sorgente.\n");
             printf("Errore lettura file sorgente.\n");
             exit(1);
         }
@@ -45,6 +51,7 @@ void archiviaFile(char *path_from, char *archivio){
             fputc(ch, file_to);
         }
         if(ferror(file_to)) {
+            syslog(LOG_ERR, "Errore lettura file destinazione.\n");
             printf("Errore scrittura file destinazione.\n");
             exit(1);
         }
@@ -54,11 +61,13 @@ void archiviaFile(char *path_from, char *archivio){
     fputs(fineFile, file_to);
 
     if(fclose(file_from)==EOF) {
+        syslog(LOG_ERR, "Errore chiusura file sorgente.\n");
         printf("Errore chiusura file sorgente.\n");
         exit(1);
     }
 
     if(fclose(file_to)==EOF) {
+        syslog(LOG_ERR, "Errore chiusura file destinazione.\n");
         printf("Errore chiusura file destinazione.\n");
         exit(1);
     }
@@ -79,10 +88,12 @@ void listaFileArchivio(char *archivio){
     /* Apertura file sorgente */
     if((file_from = fopen(archivio, "rb")) == NULL) {
         printf("Non posso aprire il file sorgente.\n");
+        syslog(LOG_ERR, "Non posso aprire il file sorgente.\n");
         exit(1);
     }   
     
     ch = fgetc(file_from); 
+    syslog(LOG_INFO, "Creazione lista file archivio iniziata");
     printf("File archivio: \n");
     
     /* lettura dell'archivio */
@@ -90,6 +101,7 @@ void listaFileArchivio(char *archivio){
         
         if(ferror(file_from)) {
             printf("Errore lettura file sorgente.\n");
+            syslog(LOG_ERR, "Errore lettura file sorgente.\n");
             exit(1);
         }
         /* Scorro finchè non verifico la stringa di controllo */
@@ -152,12 +164,14 @@ void listaFileArchivio(char *archivio){
         }
         else {
             printf("Errore nell'archivio.\n");
+            syslog(LOG_ERR, "Errore nell'archivio.\n");
             exit(1);
         }
   }
  
     if(fclose(file_from) == EOF) {
         printf("Errore chiusura file sorgente.\n");
+        syslog(LOG_ERR, "Errore chiusura file sorgente.\n");
         exit(1);
     }
 }
@@ -175,19 +189,23 @@ void estrai(char * archivia){
 
     /* Apertura file sorgente */
     if((file_from = fopen(archivia, "rb")) == NULL) {
+        syslog(LOG_ERR, "Non posso aprire il file sorgente.\n");
         printf("Non posso aprire il file sorgente.\n");
         exit(1);
     }   
     
     ch = fgetc(file_from); 
+    syslog(LOG_INFO, "Estrazione archivio iniziata");
     
     /* copia del file */
     while(!feof(file_from)) {
         
         if(ferror(file_from)) {
+            syslog(LOG_ERR, "Errore lettura file sorgente.\n");
             printf("Errore lettura file sorgente.\n");
             exit(1);
         }
+        
         /* Scorro finchè non verifico la stringa di controllo */
         while(ch == inizioFile[count] && count < strlen(inizioFile)-1){
             count++;
@@ -210,6 +228,7 @@ void estrai(char * archivia){
             
             /* apro il file di destinazione */
             if((file_to = fopen(filename, "wb")) == NULL) {
+                syslog(LOG_ERR, "Non posso aprire il file di destinazione.\n");
                 printf("Non posso aprire il file di destinazione.\n");
                 exit(1);
             }
@@ -244,6 +263,7 @@ void estrai(char * archivia){
                         
                         fputc(ch, file_to);
                         if(ferror(file_to)) {
+                            syslog(LOG_ERR, "Errore scrittura file destinazione.\n");
                             printf("Errore scrittura file destinazione.\n");
                             exit(1);
                         }
@@ -260,16 +280,19 @@ void estrai(char * archivia){
             }
         }
         else {
+            syslog(LOG_ERR, "Errore nell'archivio.\n");
             printf("Errore nell'archivio.\n");
             exit(1);
         }
         if(fclose(file_to) == EOF) {
+            syslog(LOG_ERR, "Errore chiusura file destinazione.\n");
             printf("Errore chiusura file destinazione.\n");
             exit(1);
         }
   }
  
     if(fclose(file_from) == EOF) {
+        syslog(LOG_ERR, "Errore chiusura file sorgente.\n");
         printf("Errore chiusura file sorgente.\n");
         exit(1);
     }
@@ -294,7 +317,7 @@ boolean is_dir(const char* path){
 }
 
 void print_usage() {
-    printf("Utilizzo: -c -t  -f <archivio>\n");
+    printf("Utilizzo: -c -t  -f <archivio> (char* path, ...)\n");
     printf("Utilizzo: -x -t  -f <archivio>\n");
 }
 
@@ -304,6 +327,7 @@ void archiviaDir(char *dir, char *archivio){
 	struct dirent *entry;
     
 	if((d = opendir(dir)) == NULL) {
+        syslog(LOG_ERR, "Non riesco ad aprire %s per la lettura: \n", dir);
         fprintf(stderr,"Non riesco ad aprire %s per la lettura: \n", dir);
         exit(-1); 
     }
