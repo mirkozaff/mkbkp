@@ -5,7 +5,7 @@
 mkbkp: mkbkp.o funzioni.o
 	gcc -o mkbkp mkbkp.o funzioni.o
 #
-mkbkp.o: mkbkp.c funzioni.h
+mkbkp.o: mkbkp.c
 	gcc -c mkbkp.c
 #
 funzioni.o: funzioni.c
