@@ -1,3 +1,12 @@
+/**
+ *  Anno Accademico: 2012-2013
+ *  Corso di Studio: Informatica
+ *  Titolo del progetto: Modifica utility di base di GNU/Linux
+ *  Autori: Zaffaroni Mirko n° 151818
+ *	Bonetta Giovanni n° 152122
+ **/
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +33,7 @@ void archiviaFile(char *path_from, char *archivio){
     }
 
     /* open destination file */
-    if((file_to = fopen(archivio, "a")) == NULL) {
+    if((file_to = fopen(archivio, "ab")) == NULL) {
         syslog(LOG_ERR, "Non posso aprire il file di destinazione.\n");
         printf("Non posso aprire il file di destinazione.\n");
         exit(1);
