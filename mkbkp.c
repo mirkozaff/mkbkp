@@ -28,8 +28,7 @@ int main(int argc, char *argv[]){
     
     /* Prende il path assoluto della cartella di lavoro */
     getcwd(abs_path, 400);
-    i = optind;
-        
+    
     while ((c = getopt (argc, argv, "f:cxt")) != -1){
         switch (c) {
            case 'f':
@@ -51,6 +50,9 @@ int main(int argc, char *argv[]){
         }
     } 
     
+    /* memorizzo il valore dell'optind */
+    i = optind;
+    
     if(f_flag == 0){
         printf("flag -f necessario\n");
         print_usage();
@@ -64,9 +66,7 @@ int main(int argc, char *argv[]){
         syslog(LOG_ERR, "Errore di input nel programma");
         exit(EXIT_FAILURE);       
     }
-    if(t_flag == 1){
-        listaFileArchivio(f_flag);
-    }
+    
     if(c_flag == 1){
         
         if(argc <= optind){
@@ -89,6 +89,9 @@ int main(int argc, char *argv[]){
     if(x_flag == 1){
         printf("Estrazione... \n");
         estrai(f_flag);
+    }
+    if(t_flag == 1){
+        listaFileArchivio(f_flag);
     }
     
     syslog(LOG_INFO, "Programma eseguito con successo");  
